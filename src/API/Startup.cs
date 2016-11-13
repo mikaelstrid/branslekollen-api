@@ -34,6 +34,17 @@ namespace API
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            if (!env.IsDevelopment())
+            {
+                app.Use(async (context, next) =>
+                {
+                    if (context.Request.Headers["ApiKey"] == "3A51xfj2O7PvuL8Rc9J7a4OUhP8CXHD7")
+                        await next.Invoke();
+                    else
+                        context.Response.StatusCode = 403;
+                });
+            }
+
             app.UseMvc();
         }
     }
