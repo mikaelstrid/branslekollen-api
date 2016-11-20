@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using API.ApiModels;
 using API.DAL;
+using API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -17,18 +20,33 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<VehicleApiModel> GetAll()
+        public async Task<IEnumerable<VehicleApiModel>> GetAll()
         {
-            return _vehicleRepository.GetAll().Select(VehicleApiModel.FromDomainModel);
+            return (await _vehicleRepository.GetAll()).Select(VehicleApiModel.FromDomainModel);
         }
 
         [HttpGet("{id}", Name = "GetVehicle")]
-        public IActionResult GetById(string id)
+        public async Task<IActionResult> GetById(string id)
         {
-            var vehicle = _vehicleRepository.Find(id);
+            var vehicle = await _vehicleRepository.Find(id);
             if (vehicle == null)
                 return NotFound();
             return new ObjectResult(VehicleApiModel.FromDomainModel(vehicle));
+        }
+
+        [HttpGet("ids")]
+        public async Task<IActionResult> GetByIds([FromQuery] string[] ids)
+        {
+            if (ids == null) return BadRequest("The ids parameter must not be null");
+
+            var result = new List<VehicleApiModel>();
+            foreach (var id in ids)
+            {
+                var vehicle = await _vehicleRepository.Find(id);
+                if (vehicle != null) result.Add(VehicleApiModel.FromDomainModel(vehicle));
+            }
+
+            return Ok(result);
         }
 
         [HttpPost]
@@ -36,9 +54,12 @@ namespace API.Controllers
         {
             if (vehicle == null)
                 return BadRequest();
-            var domainVehicle = vehicle.ToDomainModel();
+            vehicle.Id = Guid.NewGuid().ToString();
+
+            Vehicle domainVehicle;
+            try { domainVehicle = vehicle.ToDomainModel(); } catch (Exception e) { return BadRequest(e.Message); }
             _vehicleRepository.Add(domainVehicle);
-            return CreatedAtRoute("GetVehicle", new { id = vehicle.Id }, VehicleApiModel.FromDomainModel(domainVehicle));
+            return CreatedAtRoute("GetVehicle", new { id = domainVehicle.Id }, VehicleApiModel.FromDomainModel(domainVehicle));
         }
 
         [HttpPut("{id}")]
@@ -63,6 +84,22 @@ namespace API.Controllers
                 return NotFound();
 
             _vehicleRepository.Remove(id);
+            return new NoContentResult();
+        }
+
+
+        [HttpPost("add-refueling/{id}")]
+        public async Task<IActionResult> Create(string id, [FromBody] RefuelingApiModel refueling)
+        {
+            var domainVehicle = await _vehicleRepository.Find(id);
+            if (domainVehicle == null)
+                return BadRequest();
+            refueling.Id = Guid.NewGuid().ToString();
+
+            var domainRefueling = refueling.ToDomainModel();
+            domainVehicle.Refuelings.Add(domainRefueling);
+
+            _vehicleRepository.Update(domainVehicle);
             return new NoContentResult();
         }
     }

@@ -1,4 +1,5 @@
-﻿using API.DAL;
+﻿using API.Controllers;
+using API.DAL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,14 +22,16 @@ namespace API
 
         public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddMvc();
-            services.AddSingleton<IVehicleRepository, VehicleRepository>();
+            services.AddSingleton<IVehicleRepository, AzureBlobStorageVehicleRepository>();
+            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration
+            // https://weblog.west-wind.com/posts/2016/may/23/strongly-typed-configuration-settings-in-aspnet-core
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -39,6 +42,8 @@ namespace API
                 app.UseApiKey();
             }
 
+            //app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseCors(builder => builder.Build());
             app.UseMvc();
         }
     }
