@@ -10,7 +10,8 @@ namespace API.ApiModels
         public bool MissedRefuelings { get; set; }
         public double NumberOfLiters { get; set; }
         public double PricePerLiter { get; set; }
-        public int Odometer { get; set; }
+        public int OdometerInKm { get; set; }
+        public int? DistanceTravelledInKm { get; set; }
         public bool FullTank { get; set; }
 
         public static RefuelingApiModel FromDomainModel(Refueling domainRefueling)
@@ -22,7 +23,8 @@ namespace API.ApiModels
                 MissedRefuelings = domainRefueling.MissedRefuelings,
                 NumberOfLiters = domainRefueling.NumberOfLiters,
                 PricePerLiter = domainRefueling.PricePerLiter,
-                Odometer = domainRefueling.Odometer,
+                OdometerInKm = domainRefueling.OdometerInKm,
+                DistanceTravelledInKm = domainRefueling.DistanceTravelledInKm,
                 FullTank = domainRefueling.FullTank
             };
         }
@@ -36,7 +38,8 @@ namespace API.ApiModels
                 MissedRefuelings = MissedRefuelings,
                 NumberOfLiters = NumberOfLiters,
                 PricePerLiter = PricePerLiter,
-                Odometer = Odometer,
+                OdometerInKm = OdometerInKm,
+                DistanceTravelledInKm = DistanceTravelledInKm,
                 FullTank = FullTank
             };
         }

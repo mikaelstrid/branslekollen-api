@@ -9,7 +9,8 @@ namespace API.Models
         public bool MissedRefuelings { get; set; }
         public double NumberOfLiters { get; set; }
         public double PricePerLiter { get; set; }
-        public int Odometer { get; set; }
+        public int OdometerInKm { get; set; }
+        public int? DistanceTravelledInKm { get; set; }
         public bool FullTank { get; set; }
     }
 }

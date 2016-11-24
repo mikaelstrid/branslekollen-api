@@ -89,18 +89,36 @@ namespace API.Controllers
 
 
         [HttpPost("add-refueling/{id}")]
-        public async Task<IActionResult> Create(string id, [FromBody] RefuelingApiModel refueling)
+        public async Task<IActionResult> AddRefueling(string id, [FromBody] RefuelingApiModel refueling)
         {
             var domainVehicle = await _vehicleRepository.Find(id);
             if (domainVehicle == null)
                 return BadRequest();
+
             refueling.Id = Guid.NewGuid().ToString();
 
             var domainRefueling = refueling.ToDomainModel();
             domainVehicle.Refuelings.Add(domainRefueling);
+            domainVehicle.Refuelings.Sort((r1, r2) => r1.Date.CompareTo(r2.Date));
+
+            UpdatedTravelledDistances(domainVehicle.Refuelings);
 
             _vehicleRepository.Update(domainVehicle);
             return new NoContentResult();
+        }
+
+        private static void UpdatedTravelledDistances(IEnumerable<Refueling> refuelings)
+        {
+            Refueling previousRefueling = null;
+            foreach (var refueling in refuelings)
+            {
+                if (previousRefueling == null)
+                    refueling.DistanceTravelledInKm = null;
+                else
+                    refueling.DistanceTravelledInKm = refueling.OdometerInKm - previousRefueling.OdometerInKm;
+
+                previousRefueling = refueling;
+            }
         }
     }
 }
