@@ -15,7 +15,7 @@ namespace API.Controllers
             _vehicleRepository = vehicleRepository;
         }
 
-        [HttpGet("vehicle/{id}")]
+        [HttpGet("vehicle/{vehicleId}")]
         public async Task<IActionResult> GetByVehicleId(string vehicleId, DateTime startDate, DateTime endDate)
         {
             if (startDate > endDate) return BadRequest("The start date must occur before the end date.");
