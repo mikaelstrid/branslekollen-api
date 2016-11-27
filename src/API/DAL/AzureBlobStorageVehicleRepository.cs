@@ -26,16 +26,16 @@ namespace API.DAL
             _container = blobClient.GetContainerReference(CONTAINER_NAME);
         }
 
-        public async void Add(Vehicle vehicle)
+        public async void Add(IVehicle vehicle)
         {
             var blockBlob = GetBlockBlob(vehicle.Id);
             await blockBlob.UploadTextAsync(JsonConvert.SerializeObject(vehicle));
         }
 
-        public async Task<IEnumerable<Vehicle>> GetAll()
+        public async Task<IEnumerable<IVehicle>> GetAll()
         {
             BlobContinuationToken token = null;
-            var result = new List<Vehicle>();
+            var result = new List<IVehicle>();
             do
             {
                 var resultSegment = await _container.ListBlobsSegmentedAsync(token);
@@ -52,7 +52,7 @@ namespace API.DAL
             return result;
         }
 
-        public async Task<Vehicle> Find(string id)
+        public async Task<IVehicle> Find(string id)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace API.DAL
             await blockBlob.DeleteAsync();
         }
 
-        public async void Update(Vehicle vehicle)
+        public async void Update(IVehicle vehicle)
         {
             var blockBlob = GetBlockBlob(vehicle.Id);
             await blockBlob.UploadTextAsync(JsonConvert.SerializeObject(vehicle));

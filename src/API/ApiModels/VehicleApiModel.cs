@@ -12,7 +12,7 @@ namespace API.ApiModels
         public string Fuel { get; set; }
         public List<RefuelingApiModel> Refuelings { get; set; } = new List<RefuelingApiModel>();
 
-        public static VehicleApiModel FromDomainModel(Vehicle vehicle)
+        public static VehicleApiModel FromDomainModel(IVehicle vehicle)
         {
             return new VehicleApiModel
             {
@@ -23,7 +23,7 @@ namespace API.ApiModels
             };
         }
 
-        public Vehicle ToDomainModel()
+        public IVehicle ToDomainModel()
         {
             return new Vehicle { Id = Id, Name = Name, Fuel = ParseFuel(Fuel), Refuelings = Refuelings.Select(r => r.ToDomainModel()).ToList()};
         }

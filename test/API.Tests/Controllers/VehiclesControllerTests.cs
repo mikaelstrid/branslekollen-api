@@ -22,7 +22,7 @@ namespace API.Tests.Controllers
         private RefuelingApiModel _refuelingApiModel2;
         private RefuelingApiModel _refuelingApiModel3;
         private RefuelingApiModel _refuelingApiModel4NotFullTank;
-        private Vehicle _vehicle1;
+        private IVehicle _vehicle1;
 
         [SetUp]
         public void Setup()
@@ -83,7 +83,7 @@ namespace API.Tests.Controllers
         public async Task AddRefueling_ShouldThrowException_IfVehicleWithMatchingId_DoesNotExist()
         {
             // ARRANGE
-            _vehicleRepository.Setup(r => r.Find(_vehicle1.Id)).Returns(Task.FromResult<Vehicle>(null));
+            _vehicleRepository.Setup(r => r.Find(_vehicle1.Id)).Returns(Task.FromResult<IVehicle>(null));
 
             // ACT
             var result = await _sut.AddRefueling(_vehicle1.Id, _refuelingApiModel1);

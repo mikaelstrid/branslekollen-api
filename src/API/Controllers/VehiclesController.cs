@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.ApiModels;
-using API.DAL;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,7 +55,7 @@ namespace API.Controllers
                 return BadRequest();
             vehicle.Id = Guid.NewGuid().ToString();
 
-            Vehicle domainVehicle;
+            IVehicle domainVehicle;
             try { domainVehicle = vehicle.ToDomainModel(); } catch (Exception e) { return BadRequest(e.Message); }
             _vehicleRepository.Add(domainVehicle);
             return CreatedAtRoute("GetVehicle", new { id = domainVehicle.Id }, VehicleApiModel.FromDomainModel(domainVehicle));
@@ -96,6 +95,7 @@ namespace API.Controllers
                 return BadRequest();
 
             refueling.Id = Guid.NewGuid().ToString();
+            refueling.CreationTime = DateTime.UtcNow;
 
             var domainRefueling = refueling.ToDomainModel();
             domainVehicle.Refuelings.Add(domainRefueling);

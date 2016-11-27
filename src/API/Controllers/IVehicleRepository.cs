@@ -6,10 +6,10 @@ namespace API.Controllers
 {
     public interface IVehicleRepository
     {
-        void Add(Vehicle vehicle);
-        Task<IEnumerable<Vehicle>> GetAll();
-        Task<Vehicle> Find(string id);
+        void Add(IVehicle vehicle);
+        Task<IEnumerable<IVehicle>> GetAll();
+        Task<IVehicle> Find(string id);
         void Remove(string id);
-        void Update(Vehicle vehicle);
+        void Update(IVehicle vehicle);
     }
 }
