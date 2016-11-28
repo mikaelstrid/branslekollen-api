@@ -87,15 +87,37 @@ namespace API.Controllers
         }
 
 
-        [HttpPost("add-refueling/{id}")]
-        public async Task<IActionResult> AddRefueling(string id, [FromBody] RefuelingApiModel refueling)
+        [HttpPost("refueling/{vehicleId}")]
+        public async Task<IActionResult> AddRefueling(string vehicleId, [FromBody] RefuelingApiModel refueling)
         {
-            var domainVehicle = await _vehicleRepository.Find(id);
+            var domainVehicle = await _vehicleRepository.Find(vehicleId);
             if (domainVehicle == null)
                 return BadRequest();
 
             refueling.Id = Guid.NewGuid().ToString();
             refueling.CreationTime = DateTime.UtcNow;
+
+            var domainRefueling = refueling.ToDomainModel();
+            domainVehicle.Refuelings.Add(domainRefueling);
+            domainVehicle.Refuelings.Sort((r1, r2) => r1.Date.CompareTo(r2.Date));
+
+            UpdatedTravelledDistances(domainVehicle.Refuelings);
+
+            _vehicleRepository.Update(domainVehicle);
+            return new NoContentResult();
+        }
+
+        [HttpPut("refueling/{vehicleId}")]
+        public async Task<IActionResult> UpdateRefueling(string vehicleId, [FromBody] RefuelingApiModel refueling)
+        {
+            var domainVehicle = await _vehicleRepository.Find(vehicleId);
+            if (domainVehicle == null)
+                return BadRequest();
+
+            if (domainVehicle.Refuelings.All(r => r.Id != refueling.Id))
+                return NotFound();
+
+            domainVehicle.Refuelings.RemoveAll(r => r.Id == refueling.Id);
 
             var domainRefueling = refueling.ToDomainModel();
             domainVehicle.Refuelings.Add(domainRefueling);

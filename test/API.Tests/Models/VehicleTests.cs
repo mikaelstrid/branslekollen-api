@@ -8,9 +8,8 @@ namespace API.Tests.Models
     // http://www.alteridem.net/2016/06/18/nunit-3-testing-net-core-rc2/
     // https://docs.microsoft.com/en-us/dotnet/articles/core/testing/unit-testing-with-dotnet-test
     [TestFixture]
-    public class VehicleTests
+    public class VehicleTests : BranslekollenAssertionHelper
     {
-        private const double EPSILON = 0.00001;
         private Refueling _refueling1;
         private Refueling _refueling2;
         private Refueling _refueling3;

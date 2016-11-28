@@ -49,5 +49,21 @@ namespace API.ApiModels
                 FullTank = FullTank
             };
         }
+
+        public RefuelingApiModel Clone()
+        {
+            return new RefuelingApiModel
+            {
+                Id = Id,
+                CreationTime = CreationTime,
+                Date = Date,
+                MissedRefuelings = MissedRefuelings,
+                NumberOfLiters = NumberOfLiters,
+                PricePerLiter = PricePerLiter,
+                OdometerInKm = OdometerInKm,
+                DistanceTravelledInKm = DistanceTravelledInKm,
+                FullTank = FullTank
+            };
+        }
     }
 }
